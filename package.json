@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^134.0.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "nodemailer": "^6.9.13"
+  },
+  "scripts": {
+    "test": "nodemon server.js"
+  }
+}
