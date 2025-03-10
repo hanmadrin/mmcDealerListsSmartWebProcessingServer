@@ -91,7 +91,7 @@ router.post('/processData', async (req, res) => {
     // sort by "Model" and "Buy Now Price"
     newJson.sort((a, b) => {
         if (a.Model === b.Model) {
-            return parseFloat(a['Buy Now Price']) - parseFloat(b['Buy Now Price']);
+            return parseFloat(a['Opening Price']) - parseFloat(b['Opening Price']);
         }
         return a.Model.localeCompare(b.Model);
     });
