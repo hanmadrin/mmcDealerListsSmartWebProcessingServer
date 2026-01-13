@@ -19,6 +19,8 @@ router.post('/processData', async (req, res) => {
         "Model",
         "Trim",
         "Mileage",
+        "Drive Train",
+        "Engine Size",
         "Opening Price",
         "Buy Now Price",
         "Vehicle Link"
