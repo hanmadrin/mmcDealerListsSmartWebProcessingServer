@@ -13,84 +13,33 @@ router.post('/processData', async (req, res) => {
     const {data} = req.body;
     // console.log(data);
     const fields = [
-        "VIN",
+        "Vin#",
         "Year",
-        "Make",
-        "Model",
-        "Trim",
+        "Vehicle",
+        // "Make",
+        // "Model",
+        // "Trim",
         "Mileage",
         "Drive Train",
         "Engine Size",
-        "Opening Price",
+        "Price$",
+        "State",
         "Buy Now Price",
-        "Vehicle Link"
+        "URL"
     ]
     // save data to data.csv file
     const inputCsvData = json2csv(data, {fields});
     fs.writeFileSync(path.join(__dirname, '../input.csv'), inputCsvData);
-    // const newCsv = json2csv(newJson, {fields});
-    // fs.writeFileSync(path.join(__dirname, '../new.csv'), newCsv);
-    // read data.csv file to json
-    let rawJson = await csv().fromFile(path.join(__dirname, '../input.csv'));
-    // let rawJson = data;
-    // console.log(rawJson[0]['Buy Now Price']);
 
-    // res.json({status: 'success'});
-    // return;
+    let rawJson = await csv().fromFile(path.join(__dirname, '../input.csv'));
 
 
     const masterJson = await csv().fromFile(path.join(__dirname, '../master.csv'));
-    // const filteredOutJson = await csv().fromFile(path.join(__dirname, '../filteredOut.csv'));
 
-    // dedup against masterJson field VIN
     let newJson = rawJson.filter((raw) => {
-        return !masterJson.some((master) => master.VIN === raw.VIN);
+        return !masterJson.some((master) => master['Vin#'] === raw['Vin#']);
     });
-    // filter "Due Location Name" that starts with Auction/AUCTION/auction
-    // newJson = newJson.filter((raw) => {
-    //     return !raw['Due Location Name'].toLowerCase().startsWith('auction');
-    // });
     
-    // filter "Buy Now Price" is "0.00"
-    // newJson = newJson.filter((raw) => {
-    //     return raw['Buy Now Price'] !== '0.00';
-    // })
-
-
-    // dedup against filteredOutJson field VIN
-    // let newFilteredOutJson = rawJson.filter((raw) => {
-    //     return !filteredOutJson.some((filteredOut) => filteredOut.VIN === raw.VIN);
-    // });
-    // newFilteredOutJson = newFilteredOutJson.filter((raw) => {
-    //     return raw['Due Location Name'].toLowerCase().startsWith('auction');
-    // });
-    // newFilteredOutJson = newFilteredOutJson.filter((raw) => {
-    //     return raw['Buy Now Price'] === '0.00';
-    // });
-    // // ADD usa date and time column on filteredOutJson
-    // newFilteredOutJson = newFilteredOutJson.map((raw) => {
-    //     const date = new Date();
-    //     const usaDate = date.toLocaleDateString('en-US');
-    //     const usaTime = date.toLocaleTimeString('en-US');
-    //     return {'Time Stamp': `${usaDate} ${usaTime}`,...raw};
-    // });
-
-    // const filteredOutFields = [
-    //     "Time Stamp",
-    //     ...fields
-    // ];
-
-
-
-
-    // save newFilteredOutJson to filteredOut.csv file
-    // const newMasterFilteredOutJson = [...filteredOutJson, ...newFilteredOutJson];
-    // const newFilteredOutCsv = json2csv(newMasterFilteredOutJson, {fields: filteredOutFields});
-    // fs.writeFileSync(path.join(__dirname, '../filteredOut.csv'), newFilteredOutCsv);
-    
-
-
-    // sort by "Model" and "Buy Now Price"
     newJson.sort((a, b) => {
         if (a.Model === b.Model) {
             return parseFloat(a['Opening Price']) - parseFloat(b['Opening Price']);
@@ -106,29 +55,17 @@ router.post('/processData', async (req, res) => {
     // save newJson to new.csv file
     const newCsv = json2csv(newJson, {fields});
     fs.writeFileSync(path.join(__dirname, '../new.csv'), newCsv);
-
+    // return;
     await sendMail({newCsv: newCsv, rawCount, newCount});
+
+    
     console.log('email sent')
-    // filer ot raw json buy no 
-    // rawJson = rawJson.filter((raw) => {
-    //     return raw['Buy Now Price'] !== '0.00';
-    // });
-    // auction
-    // rawJson = rawJson.filter((raw) => {
-    //     return !raw['Due Location Name'].toLowerCase().startsWith('auction');
-    // });
-    // save newJson to master.csv file
-    // const newMasterJson = [...masterJson, ...newJson];
-    // const newMasterCsv = json2csv(newMasterJson, {fields});
     const rawCsv = json2csv(rawJson, {fields});
     fs.writeFileSync(path.join(__dirname, '../master.csv'), rawCsv);
 
-    // csv to json
 
 
     res.json({status: 'success'});
-    // const result = await sendMail({data});
-    // res.json(result);
 });
 
 // default export
